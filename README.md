@@ -1,4 +1,4 @@
-KioskFoodAndroid
+Kiosk Food Android
 ================
 
-An App for your foods!
+An App for Food Menu!
