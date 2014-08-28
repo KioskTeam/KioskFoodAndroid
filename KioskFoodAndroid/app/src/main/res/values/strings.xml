@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kiosk Food Anroid</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="kioskFood">Kiosk Food</string>
+    <string name="action_settings">Settings</string>
+    <string name="cd_scaling_image">landscape photo</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
