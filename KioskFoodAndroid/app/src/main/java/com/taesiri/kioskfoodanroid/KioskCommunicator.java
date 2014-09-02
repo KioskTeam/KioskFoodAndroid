@@ -114,6 +114,7 @@ public class KioskCommunicator {
                             newFood.set_imagesUrls(imageUrls);
                             foodsInNewCategory[j] = newFood;
                         }
+                        newCategory.set_foods(foodsInNewCategory);
                         restaurantCategories[i] = newCategory;
                     }
 
@@ -130,7 +131,7 @@ public class KioskCommunicator {
         @Override
         protected void onPostExecute(RestaurantData result) {
             // TODO : Hide Progress Dialog
-            CategoryActivity.instance.dataReceived(result);
+            HomeActivity.instance.dataReceived(result);
         }
     }
 }
