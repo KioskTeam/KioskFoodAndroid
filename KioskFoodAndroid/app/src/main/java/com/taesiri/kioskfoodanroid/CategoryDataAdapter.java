@@ -18,13 +18,13 @@ import java.util.Random;
 /**
  * Created by MohammadReza on 9/2/2014.
  */
-public class SampleAdapter  extends ArrayAdapter<String> {
+public class CategoryDataAdapter  extends ArrayAdapter<String> {
 
-    private static final String TAG = "SampleAdapter";
+    private static final String TAG = "CategoryDataAdapter";
 
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
-        Button btnGo;
+        Button btnLike;
     }
 
     private final LayoutInflater mLayoutInflater;
@@ -33,7 +33,7 @@ public class SampleAdapter  extends ArrayAdapter<String> {
 
     private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
 
-    public SampleAdapter(final Context context, final int textViewResourceId) {
+    public CategoryDataAdapter(final Context context, final int textViewResourceId) {
         super(context, textViewResourceId);
         mLayoutInflater = LayoutInflater.from(context);
         mRandom = new Random();
@@ -50,10 +50,10 @@ public class SampleAdapter  extends ArrayAdapter<String> {
 
         ViewHolder vh;
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item_sample, parent, false);
+            convertView = mLayoutInflater.inflate(R.layout.list_item_food, parent, false);
             vh = new ViewHolder();
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
-            vh.btnGo = (Button) convertView.findViewById(R.id.btn_go);
+            vh.btnLike = (Button) convertView.findViewById(R.id.btn_like);
 
             convertView.setTag(vh);
         }
@@ -70,13 +70,13 @@ public class SampleAdapter  extends ArrayAdapter<String> {
         Log.d(TAG, "getView position:" + position + " h:" + positionHeight);
 
         vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setText(getItem(position) + position);
+        vh.txtLineOne.setText(getItem(position));
 
-        vh.btnGo.setOnClickListener(new View.OnClickListener() {
+        vh.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Toast.makeText(getContext(), "Button Clicked Position " +
-                        position, Toast.LENGTH_SHORT).show();
+                //TODO : LIKE this food!
+                Toast.makeText(getContext(), "LIKE Button Clicked Position " + position, Toast.LENGTH_SHORT).show();
             }
         });
 

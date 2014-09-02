@@ -1,6 +1,7 @@
 package com.taesiri.kioskfoodanroid;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,21 +15,23 @@ import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
 
-public class CategoryActivity extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-    private static final String TAG = "CategoryActivity";
-    public static CategoryActivity instance;
-    public static CategoryData CurrentData;
+
+public class HomeActivity extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    private static final String TAG = "HomeActivity";
+    public static HomeActivity instance;
 
     private StaggeredGridView mGridView;
     private boolean mHasRequestedMore;
-    private CategoryDataAdapter mAdapter;
+    private HomePageDataAdapter mAdapter;
+
+    private RestaurantData _currentData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        setTitle("Foods in Category");
+        setTitle("Browse Categories");
         mGridView = (StaggeredGridView) findViewById(R.id.grid_view);
 
         LayoutInflater layoutInflater = getLayoutInflater();
@@ -37,23 +40,17 @@ public class CategoryActivity extends Activity implements AbsListView.OnScrollLi
         View footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
         TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
         TextView txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
-        txtHeaderTitle.setText("INSIDE CATEGORY");
+        txtHeaderTitle.setText("HOME");
         txtFooterTitle.setText("THE FOOTER!");
 
         mGridView.addHeaderView(header);
         mGridView.addFooterView(footer);
-        mAdapter = new CategoryDataAdapter(this, R.id.txt_line1);
+        mAdapter = new HomePageDataAdapter(this, R.id.txt_line1);
 
         instance = this;
 
-
-        if(CurrentData != null) {
-            for (FoodData foodData : CurrentData.get_foods()){
-                mAdapter.add(foodData.get_name());
-            }
-            txtHeaderTitle.setText(CurrentData.get_name());
-        }
-
+        KioskCommunicator kCommunicator = new KioskCommunicator();
+        kCommunicator.fetchData();
 
         mGridView.setAdapter(mAdapter);
         mGridView.setOnScrollListener(this);
@@ -119,16 +116,33 @@ public class CategoryActivity extends Activity implements AbsListView.OnScrollLi
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(this, "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+
+        if(_currentData != null) {
+            if (position <= _currentData.get_categories().length) {
+                Intent catIntent = new Intent(this, CategoryActivity.class);
+                CategoryActivity.CurrentData = _currentData.get_categories()[position-1];
+                this.startActivity(catIntent);
+            }
+        }
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
     {
-
-
         Toast.makeText(this, "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
         return true;
     }
 
+    public void dataReceived(RestaurantData rData){
+        for(CategoryData cat : rData.get_categories()){
+            mAdapter.add(cat.get_name());
+        }
 
+        _currentData = rData;
+
+        mAdapter.add("Gallery");
+        mAdapter.add("Contact");
+        mAdapter.add("About");
+        mAdapter.add("Other!");
+    }
 }
