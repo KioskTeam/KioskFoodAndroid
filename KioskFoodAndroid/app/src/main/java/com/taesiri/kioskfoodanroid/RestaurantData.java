@@ -8,6 +8,10 @@ public class RestaurantData {
     private String _address;
     private CategoryData[] _categories;
 
+    public RestaurantData(){
+
+    }
+
     public RestaurantData(String _name) {
         this._name = _name;
     }
@@ -26,18 +30,23 @@ public class RestaurantData {
     public void set_categories(CategoryData[] categories){
         _categories = categories;
     }
-    public void setName(String name){
+
+    public void set_name(String name){
         _name = name;
     }
+
     public void set_address(String address){
         _address = address;
     }
+
     public String get_name(){
         return  _name;
     }
+
     public  String get_address(){
         return  _address;
     }
+
     public CategoryData[] get_categories(){
         return _categories;
     }

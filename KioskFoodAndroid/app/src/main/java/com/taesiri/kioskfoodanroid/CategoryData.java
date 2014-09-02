@@ -8,6 +8,10 @@ public class CategoryData {
     private String _imageUrl;
     private FoodData[] _foods;
 
+    public CategoryData(){
+
+    }
+
     public CategoryData(String _name) {
         this._name = _name;
     }

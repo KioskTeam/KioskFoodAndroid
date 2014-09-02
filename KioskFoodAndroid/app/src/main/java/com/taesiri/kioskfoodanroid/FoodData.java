@@ -10,6 +10,9 @@ public class FoodData {
     private String _thumbnailImageUrl;
     private String[] _imagesUrls;
 
+    public FoodData () {
+
+    }
     public FoodData(String _name, String _description) {
         this._name = _name;
         this._description = _description;

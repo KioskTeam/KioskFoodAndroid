@@ -4,15 +4,26 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MyActivity extends Activity {
+
+    public static MyActivity instance;
+    public TextView tvContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-    }
 
+        instance = this;
+
+        tvContent = (TextView) findViewById(R.id.tvStatus);
+        tvContent.setText("Running");
+
+        KioskCommunicator kCommunicator = new KioskCommunicator();
+        kCommunicator.fetchData();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -31,5 +42,10 @@ public class MyActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void dataReceived(RestaurantData data) {
+
+
     }
 }
