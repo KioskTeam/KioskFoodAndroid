@@ -3,6 +3,7 @@ package com.taesiri.kioskfoodanroid;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -82,6 +83,8 @@ public class KioskCommunicator {
                     restaurantData.set_address(jsonObj.getString(TAG_RESTAURANT_ADDRESS));
                     JSONArray categoriesArray = jsonObj.getJSONArray(TAG_CATEGORIES);
 
+                    CategoryData[] restaurantCategories  = new CategoryData[categoriesArray.length()];
+
                     for (int i = 0, n = categoriesArray.length(); i < n ; i++) {
                         CategoryData newCategory = new CategoryData();
 
@@ -111,7 +114,11 @@ public class KioskCommunicator {
                             newFood.set_imagesUrls(imageUrls);
                             foodsInNewCategory[j] = newFood;
                         }
+                        newCategory.set_foods(foodsInNewCategory);
+                        restaurantCategories[i] = newCategory;
                     }
+
+                    restaurantData.set_categories(restaurantCategories);
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -124,8 +131,7 @@ public class KioskCommunicator {
         @Override
         protected void onPostExecute(RestaurantData result) {
             // TODO : Hide Progress Dialog
-            MyActivity.instance.tvContent.setText(result.get_name());
-            //MyActivity.instance.dataReceived(ParseData(result));
+            HomeActivity.instance.dataReceived(result);
         }
     }
 }
