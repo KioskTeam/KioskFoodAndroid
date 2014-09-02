@@ -1,15 +1,17 @@
 package com.taesiri.kioskfoodanroid;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MyActivity extends Activity {
-
     public static MyActivity instance;
-    public TextView tvContent;
+
+    private TextView tvRestaurantName;
+    private TextView tvRestaurantAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +20,11 @@ public class MyActivity extends Activity {
 
         instance = this;
 
-        tvContent = (TextView) findViewById(R.id.tvStatus);
-        tvContent.setText("Running");
+        tvRestaurantName = (TextView) findViewById(R.id.tvRestaurantName);
+        tvRestaurantName.setText("...");
+
+        tvRestaurantAddress = (TextView) findViewById(R.id.tvRestaurantAddress);
+        tvRestaurantAddress.setText("...");
 
         KioskCommunicator kCommunicator = new KioskCommunicator();
         kCommunicator.fetchData();
@@ -45,7 +50,7 @@ public class MyActivity extends Activity {
     }
 
     public void dataReceived(RestaurantData data) {
-
-
+        tvRestaurantName.setText(data.get_name());
+        tvRestaurantAddress.setText(data.get_address());
     }
 }

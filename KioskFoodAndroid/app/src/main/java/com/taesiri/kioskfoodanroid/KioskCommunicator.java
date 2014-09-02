@@ -2,7 +2,6 @@ package com.taesiri.kioskfoodanroid;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.util.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -124,8 +123,8 @@ public class KioskCommunicator {
         @Override
         protected void onPostExecute(RestaurantData result) {
             // TODO : Hide Progress Dialog
-            MyActivity.instance.tvContent.setText(result.get_name());
-            //MyActivity.instance.dataReceived(ParseData(result));
+
+            MyActivity.instance.dataReceived(result);
         }
     }
 }
