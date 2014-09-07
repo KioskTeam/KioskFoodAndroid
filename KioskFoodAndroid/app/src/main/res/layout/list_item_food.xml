@@ -14,10 +14,10 @@
         android:gravity="center"/>
 
     <Button
+        android:background="@android:drawable/btn_star"
         android:id="@+id/btn_like"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:text="LIKE" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|right" />
 
 </FrameLayout>

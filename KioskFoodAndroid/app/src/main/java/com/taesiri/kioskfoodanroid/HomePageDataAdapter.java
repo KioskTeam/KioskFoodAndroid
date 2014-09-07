@@ -8,11 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
-
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -30,7 +27,6 @@ public class HomePageDataAdapter extends ArrayAdapter<CategoryData> {
 
     private final LayoutInflater mLayoutInflater;
     private final Random mRandom;
-
     private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
 
     public HomePageDataAdapter(final Context context, final int textViewResourceId) {
@@ -97,4 +93,5 @@ public class HomePageDataAdapter extends ArrayAdapter<CategoryData> {
     private double getRandomHeightRatio() {
         return (mRandom.nextDouble() / 2.0) + 1.0; // height will be 1.0 - 1.5 the width
     }
+
 }

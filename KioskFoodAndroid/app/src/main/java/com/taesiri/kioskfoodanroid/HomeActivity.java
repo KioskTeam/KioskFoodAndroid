@@ -41,7 +41,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         View header = layoutInflater.inflate(R.layout.list_item_header_footer, null);
         View footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
         TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
-        TextView txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
+        TextView txtFooterTitle = (TextView) footer.findViewById(R.id.txt_title);
         txtHeaderTitle.setText("HOME");
         txtFooterTitle.setText("THE FOOTER!");
 
@@ -119,29 +119,25 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(this, "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
 
-        if(_currentData != null) {
+        if (_currentData != null) {
             if (position <= _currentData.get_categories().length) {
                 Intent catIntent = new Intent(this, CategoryActivity.class);
-                CategoryActivity.CurrentData = _currentData.get_categories()[position-1];
+                CategoryActivity.CurrentData = _currentData.get_categories()[position - 1];
                 this.startActivity(catIntent);
             }
         }
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-    {
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(this, "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
         return true;
     }
 
-    public void dataReceived(RestaurantData rData){
-        for(CategoryData cat : rData.get_categories()){
+    public void dataReceived(RestaurantData rData) {
+        for (CategoryData cat : rData.get_categories()) {
             mAdapter.add(cat);
         }
-
         _currentData = rData;
     }
-
-
 }

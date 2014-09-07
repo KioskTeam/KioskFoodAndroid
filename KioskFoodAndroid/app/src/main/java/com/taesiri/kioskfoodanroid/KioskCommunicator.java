@@ -1,18 +1,20 @@
 package com.taesiri.kioskfoodanroid;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,14 +42,32 @@ public class KioskCommunicator {
     private static final String TAG_PICTURES = "Pictures";
     private static final String REMOTE_ASSET_DIRECTORY = "http://secure-scrubland-8071.herokuapp.com/assets/";
     private static final String REMOTE_API_URL = "http://secure-scrubland-8071.herokuapp.com/api/latest";
+    private static final String ASSETS_FOLDER_NAME = "assets";
 
     public RestaurantData restaurantData;
     public Map<String, Bitmap> ImagePool;
-
+    private File applicationDirectory;
+    
     public KioskCommunicator(){
         ImagePool = new HashMap<String , Bitmap>();
+        
+        applicationDirectory = HomeActivity.instance.getApplicationContext().getDir(ASSETS_FOLDER_NAME, Context.MODE_PRIVATE);
 
-        // TODO: Fill ImagePool with Local Stored Data!
+        String[] localImages = applicationDirectory.list();
+        for (int i = 0, n = localImages.length; i < n; i++){
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap lImage = BitmapFactory.decodeFile(applicationDirectory.getPath() + '/' + localImages[i], options);
+
+                ImagePool.put(localImages[i],lImage );
+            }
+            catch (Exception exp) {
+                exp.printStackTrace();
+            }
+
+
+        }
     }
 
     public void fetchData () {
@@ -206,7 +226,23 @@ public class KioskCommunicator {
 
                     // TODO : SAVE BITMAP
 
+                    FileOutputStream out = null;
+                    try {
+                        out = new FileOutputStream(applicationDirectory.getPath() + '/' + keyName);
+                        bImage.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        try {
+                            if (out != null) {
+                                out.close();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     return  bImage;
                 }
