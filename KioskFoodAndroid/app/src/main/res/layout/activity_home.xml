@@ -5,4 +5,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:item_margin="8dp"
-    app:column_count="@integer/grid_column_count" />
+    app:column_count="@integer/grid_column_count_2" />
