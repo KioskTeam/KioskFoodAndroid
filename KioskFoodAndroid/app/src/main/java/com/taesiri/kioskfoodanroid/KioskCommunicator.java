@@ -1,6 +1,9 @@
 package com.taesiri.kioskfoodanroid;
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,8 +13,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Created by MohammadReza on 9/1/2014.
@@ -27,10 +38,37 @@ public class KioskCommunicator {
     private static final String TAG_PRICE = "Price";
     private static final String TAG_THUMBNAIL = "Thumbnail";
     private static final String TAG_PICTURES = "Pictures";
+    private static final String REMOTE_ASSET_DIRECTORY = "http://secure-scrubland-8071.herokuapp.com/assets/";
+    private static final String REMOTE_API_URL = "http://secure-scrubland-8071.herokuapp.com/api/latest";
+
+    public RestaurantData restaurantData;
+    public Map<String, Bitmap> ImagePool;
+
+    public KioskCommunicator(){
+        ImagePool = new HashMap<String , Bitmap>();
+
+        // TODO: Fill ImagePool with Local Stored Data!
+    }
 
     public void fetchData () {
+
         KioskAsyncFetcher asyncDownloader = new KioskAsyncFetcher();
-        asyncDownloader.execute(new String [] {"http://secure-scrubland-8071.herokuapp.com/api/latest"});
+        asyncDownloader.execute(new String[]{REMOTE_API_URL});
+    }
+
+    public void getImage(String imageKey, Callable<Void> callBackFunction) throws Exception {
+
+        Log.i("MREZA", "GETTING the IMAGE!");
+
+        if(ImagePool.get(imageKey)!= null)
+        {
+            callBackFunction.call();
+            return;
+        }
+
+        KioskAsyncImageDownloader asyncImageDownloader = new KioskAsyncImageDownloader();
+        asyncImageDownloader.CallBack = callBackFunction;
+        asyncImageDownloader.execute(new String[] {REMOTE_ASSET_DIRECTORY + imageKey});
     }
 
     private class KioskAsyncFetcher extends AsyncTask<String, Void, RestaurantData> {
@@ -101,7 +139,7 @@ public class KioskCommunicator {
                             FoodData newFood = new FoodData();
 
                             newFood.set_name(foodObject.getString(TAG_NAME));
-                            newFood.set_price(foodObject.getInt(TAG_PRICE));
+                            //newFood.set_price(foodObject.getInt(TAG_PRICE));
                             newFood.set_thumbnailImageUrl(foodObject.getString(TAG_THUMBNAIL));
                             JSONArray imageUrlsArray = foodObject.getJSONArray(TAG_PICTURES);
 
@@ -126,12 +164,66 @@ public class KioskCommunicator {
             }
             return  restaurantData;
         }
-
-
         @Override
         protected void onPostExecute(RestaurantData result) {
             // TODO : Hide Progress Dialog
+            restaurantData = result;
             HomeActivity.instance.dataReceived(result);
+        }
+    }
+
+
+    private class KioskAsyncImageDownloader extends  AsyncTask<String, Void, Bitmap> {
+
+        public Callable<Void> CallBack;
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+
+            for(String currentUrl : urls) {
+
+                InputStream data = null;
+
+                try {
+                    URL url = new URL(currentUrl);
+                    URLConnection urlConn = url.openConnection();
+                    HttpURLConnection httpConn = (HttpURLConnection) urlConn;
+                    httpConn.connect();
+
+                    data = httpConn.getInputStream();
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(data != null) {
+                    Bitmap bImage = BitmapFactory.decodeStream(data);
+
+                    int index = currentUrl.lastIndexOf("/");
+                    String keyName = currentUrl.substring(index + 1);
+                    ImagePool.put(keyName, bImage);
+
+                    // TODO : SAVE BITMAP
+
+
+
+                    return  bImage;
+                }
+
+            }
+
+
+            return  null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            try {
+                CallBack.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

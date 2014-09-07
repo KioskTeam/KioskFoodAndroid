@@ -1,6 +1,7 @@
 package com.taesiri.kioskfoodanroid;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -8,25 +9,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 /**
  * Created by MohammadReza on 9/2/2014.
  */
-public class HomePageDataAdapter extends ArrayAdapter<String> {
+public class HomePageDataAdapter extends ArrayAdapter<CategoryData> {
 
     private static final String TAG = "HomePageDataAdapter";
 
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
+        DynamicHeightImageView ivCategoryImage;
     }
 
     private final LayoutInflater mLayoutInflater;
     private final Random mRandom;
-    private final ArrayList<Integer> mBackgroundColors;
 
     private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
 
@@ -34,22 +37,17 @@ public class HomePageDataAdapter extends ArrayAdapter<String> {
         super(context, textViewResourceId);
         mLayoutInflater = LayoutInflater.from(context);
         mRandom = new Random();
-        mBackgroundColors = new ArrayList<Integer>();
-        mBackgroundColors.add(R.color.orange);
-        mBackgroundColors.add(R.color.green);
-        mBackgroundColors.add(R.color.blue);
-        mBackgroundColors.add(R.color.yellow);
-        mBackgroundColors.add(R.color.grey);
     }
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
 
-        ViewHolder vh;
+        final ViewHolder vh;
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.list_item_category, parent, false);
             vh = new ViewHolder();
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
+            vh.ivCategoryImage = (DynamicHeightImageView) convertView.findViewById(R.id.dynamic_image_view);
 
             convertView.setTag(vh);
         }
@@ -58,13 +56,26 @@ public class HomePageDataAdapter extends ArrayAdapter<String> {
         }
 
         double positionHeight = getPositionRatio(position);
-        int backgroundIndex = position >= mBackgroundColors.size() ?
-                position % mBackgroundColors.size() : position;
-
-        convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
 
         vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setText(getItem(position));
+        vh.txtLineOne.setText(getItem(position).get_name());
+
+
+        try {
+            int index = getItem(position).get_imageUrl().lastIndexOf("/");
+            final String imageKey = getItem(position).get_imageUrl().substring(index + 1);
+            HomeActivity.instance.kCommunicator.getImage(  imageKey , new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Bitmap catImage = HomeActivity.instance.kCommunicator.ImagePool.get(imageKey);
+                    vh.ivCategoryImage.setImageBitmap(catImage);
+                    return null;
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return convertView;
     }

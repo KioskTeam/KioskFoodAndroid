@@ -24,6 +24,8 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     private boolean mHasRequestedMore;
     private HomePageDataAdapter mAdapter;
 
+    public static KioskCommunicator kCommunicator;
+
     private RestaurantData _currentData;
 
     @Override
@@ -49,7 +51,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
 
         instance = this;
 
-        KioskCommunicator kCommunicator = new KioskCommunicator();
+        kCommunicator = new KioskCommunicator();
         kCommunicator.fetchData();
 
         mGridView.setAdapter(mAdapter);
@@ -135,14 +137,11 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
 
     public void dataReceived(RestaurantData rData){
         for(CategoryData cat : rData.get_categories()){
-            mAdapter.add(cat.get_name());
+            mAdapter.add(cat);
         }
 
         _currentData = rData;
-
-        mAdapter.add("Gallery");
-        mAdapter.add("Contact");
-        mAdapter.add("About");
-        mAdapter.add("Other!");
     }
+
+
 }

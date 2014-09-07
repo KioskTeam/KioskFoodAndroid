@@ -5,12 +5,33 @@
     android:id="@+id/panel_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants"
+    android:background="@android:drawable/dialog_holo_light_frame">
+
+    <com.etsy.android.grid.util.DynamicHeightImageView
+        android:id="@+id/dynamic_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"/>
 
     <com.etsy.android.grid.util.DynamicHeightTextView
         android:id="@+id/txt_line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"/>
+        android:gravity="bottom"
+        android:paddingBottom="20dp"
+        android:paddingLeft="22dp"
+        android:paddingStart="22dp"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:textSize="28sp"
+        android:textColor="#ffffff"
+        android:shadowColor="#ff777777"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="25"/>
+
 
 </FrameLayout>
