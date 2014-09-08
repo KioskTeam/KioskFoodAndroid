@@ -19,19 +19,16 @@ import com.etsy.android.grid.StaggeredGridView;
 public class HomeActivity extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final String TAG = "HomeActivity";
     public static HomeActivity instance;
-
     private StaggeredGridView mGridView;
     private boolean mHasRequestedMore;
     private HomePageDataAdapter mAdapter;
-
     public static KioskCommunicator kCommunicator;
-
     private RestaurantData _currentData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
+        setContentView(R.layout.activity_home);
 
         setTitle("Browse Categories");
         mGridView = (StaggeredGridView) findViewById(R.id.grid_view);
@@ -77,6 +74,11 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                 break;
             case R.id.col3:
                 mGridView.setColumnCount(3);
+                break;
+            case R.id.col4:
+                kCommunicator.forceUpdate = true;
+                kCommunicator.fetchData();
+                // TODO : Refresh the grid
                 break;
         }
         return true;
@@ -135,6 +137,9 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     }
 
     public void dataReceived(RestaurantData rData) {
+        kCommunicator.forceUpdate = false;
+        mAdapter.clear();
+
         for (CategoryData cat : rData.get_categories()) {
             mAdapter.add(cat);
         }

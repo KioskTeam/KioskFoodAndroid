@@ -15,9 +15,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,30 +45,36 @@ public class KioskCommunicator {
     private static final String REMOTE_ASSET_DIRECTORY = "http://secure-scrubland-8071.herokuapp.com/assets/";
     private static final String REMOTE_API_URL = "http://secure-scrubland-8071.herokuapp.com/api/latest";
     private static final String ASSETS_FOLDER_NAME = "assets";
+    private static final String DATA_FOLDER_NAME = "data";
+    private static final String LOCAL_JSON_FILE_NAME = "data.json";
 
+
+    public boolean forceUpdate;
     public RestaurantData restaurantData;
     public Map<String, Bitmap> ImagePool;
-    private File applicationDirectory;
-    
+    private File assetsDirectory;
+    private File dataDirectory;
+
     public KioskCommunicator(){
         ImagePool = new HashMap<String , Bitmap>();
-        
-        applicationDirectory = HomeActivity.instance.getApplicationContext().getDir(ASSETS_FOLDER_NAME, Context.MODE_PRIVATE);
 
-        String[] localImages = applicationDirectory.list();
+        assetsDirectory = HomeActivity.instance.getApplicationContext().getDir(ASSETS_FOLDER_NAME, Context.MODE_PRIVATE);
+        dataDirectory = HomeActivity.instance.getApplicationContext().getDir(DATA_FOLDER_NAME, Context.MODE_PRIVATE);
+
+        forceUpdate = false;
+
+        String[] localImages = assetsDirectory.list();
         for (int i = 0, n = localImages.length; i < n; i++){
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap lImage = BitmapFactory.decodeFile(applicationDirectory.getPath() + '/' + localImages[i], options);
+                Bitmap lImage = BitmapFactory.decodeFile(assetsDirectory.getPath() + '/' + localImages[i], options);
 
                 ImagePool.put(localImages[i],lImage );
             }
             catch (Exception exp) {
                 exp.printStackTrace();
             }
-
-
         }
     }
 
@@ -92,48 +100,81 @@ public class KioskCommunicator {
     }
 
     private class KioskAsyncFetcher extends AsyncTask<String, Void, RestaurantData> {
-        private ProgressDialog dialog;
+        private ProgressDialog pDialog;
 
         public KioskAsyncFetcher(){
 
         }
 
-        private KioskAsyncFetcher(ProgressDialog dialog) {
-            this.dialog = dialog;
-        }
-
         @Override
         protected void onPreExecute() {
-            // TODO : Show Progress Dialog
+            pDialog = new ProgressDialog(HomeActivity.instance);
+            pDialog.setMessage("Refreshing ...");
+            pDialog.show();
         }
 
         @Override
         protected RestaurantData doInBackground(String... urls) {
-            // Downloading json file
             String response = "";
-            for (String url : urls) {
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(url);
+            File localJsonFile = new File(dataDirectory + File.separator + "/" + LOCAL_JSON_FILE_NAME);
+            RestaurantData restaurantData = new RestaurantData();
+
+            if(localJsonFile.exists() && !forceUpdate) {
+                StringBuilder text = new StringBuilder();
                 try {
-                    HttpResponse execute = client.execute(httpGet);
-                    InputStream content = execute.getEntity().getContent();
+                    BufferedReader br = new BufferedReader(new FileReader(localJsonFile));
+                    String line;
 
-                    BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
-                    String s = "";
-                    while ((s = buffer.readLine()) != null) {
-                        response += s;
+                    while ((line = br.readLine()) != null) {
+                        text.append(line);
+                        text.append('\n');
                     }
+                }
+                catch (IOException e) {
+                    //You'll need to add proper error handling here
+                }
 
-                } catch (Exception e) {
+                response = text.toString();
+            }
+            else {
+                for (String url : urls) {
+                    DefaultHttpClient client = new DefaultHttpClient();
+                    HttpGet httpGet = new HttpGet(url);
+                    try {
+                        HttpResponse execute = client.execute(httpGet);
+                        InputStream content = execute.getEntity().getContent();
 
-                    e.printStackTrace();
+                        BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
+                        String s = "";
+                        while ((s = buffer.readLine()) != null) {
+                            response += s;
+                        }
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+                }
+
+                if(response != null) {
+                    FileOutputStream fOut = null;
+                    try {
+                        fOut = new FileOutputStream(localJsonFile, false);
+                        OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+                        myOutWriter.append(response);
+                        myOutWriter.close();
+                        fOut.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
-            // Parsing Data
-            RestaurantData restaurantData = new RestaurantData();
 
             if (response != null) {
+
                 try {
                     JSONObject jsonObj = new JSONObject(response);
 
@@ -182,27 +223,34 @@ public class KioskCommunicator {
                     e.printStackTrace();
                 }
             }
+
             return  restaurantData;
         }
+
+
         @Override
         protected void onPostExecute(RestaurantData result) {
             // TODO : Hide Progress Dialog
             restaurantData = result;
             HomeActivity.instance.dataReceived(result);
+            hidePDialog();
+        }
+
+        private void hidePDialog() {
+            if (pDialog != null) {
+                pDialog.dismiss();
+                pDialog = null;
+            }
         }
     }
 
 
     private class KioskAsyncImageDownloader extends  AsyncTask<String, Void, Bitmap> {
-
         public Callable<Void> CallBack;
         @Override
         protected Bitmap doInBackground(String... urls) {
-
-            for(String currentUrl : urls) {
-
+            for (String currentUrl : urls) {
                 InputStream data = null;
-
                 try {
                     URL url = new URL(currentUrl);
                     URLConnection urlConn = url.openConnection();
@@ -224,11 +272,9 @@ public class KioskCommunicator {
                     String keyName = currentUrl.substring(index + 1);
                     ImagePool.put(keyName, bImage);
 
-                    // TODO : SAVE BITMAP
-
                     FileOutputStream out = null;
                     try {
-                        out = new FileOutputStream(applicationDirectory.getPath() + '/' + keyName);
+                        out = new FileOutputStream(assetsDirectory.getPath() + '/' + keyName);
                         bImage.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
                     } catch (FileNotFoundException e) {
@@ -243,13 +289,9 @@ public class KioskCommunicator {
                             e.printStackTrace();
                         }
                     }
-
                     return  bImage;
                 }
-
             }
-
-
             return  null;
         }
 
