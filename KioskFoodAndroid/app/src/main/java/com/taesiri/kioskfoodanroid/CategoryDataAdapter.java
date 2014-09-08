@@ -1,103 +1,85 @@
 package com.taesiri.kioskfoodanroid;
 
+import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.etsy.android.grid.util.DynamicHeightTextView;
-
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.List;
 
 /**
  * Created by MohammadReza on 9/2/2014.
  */
-public class CategoryDataAdapter  extends ArrayAdapter<String> {
+public class CategoryDataAdapter extends BaseAdapter {
+    private Activity activity;
+    private LayoutInflater inflater;
+    private List<FoodData> foodItems;
 
-    private static final String TAG = "CategoryDataAdapter";
-
-    static class ViewHolder {
-        DynamicHeightTextView txtLineOne;
-        Button btnLike;
-    }
-
-    private final LayoutInflater mLayoutInflater;
-    private final Random mRandom;
-    private final ArrayList<Integer> mBackgroundColors;
-
-    private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
-
-    public CategoryDataAdapter(final Context context, final int textViewResourceId) {
-        super(context, textViewResourceId);
-        mLayoutInflater = LayoutInflater.from(context);
-        mRandom = new Random();
-        mBackgroundColors = new ArrayList<Integer>();
-        mBackgroundColors.add(R.color.orange);
-        mBackgroundColors.add(R.color.green);
-        mBackgroundColors.add(R.color.blue);
-        mBackgroundColors.add(R.color.yellow);
-        mBackgroundColors.add(R.color.grey);
+    public CategoryDataAdapter(Activity activity, List<FoodData> movieItems) {
+        this.activity = activity;
+        this.foodItems = movieItems;
     }
 
     @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
+    public int getCount() {
+        return foodItems.size();
+    }
 
-        ViewHolder vh;
-        if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item_food, parent, false);
-            vh = new ViewHolder();
-            vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
-            vh.btnLike = (Button) convertView.findViewById(R.id.btn_like);
+    @Override
+    public Object getItem(int location) {
+        return foodItems.get(location);
+    }
 
-            convertView.setTag(vh);
-        }
-        else {
-            vh = (ViewHolder) convertView.getTag();
-        }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-        double positionHeight = getPositionRatio(position);
-        int backgroundIndex = position >= mBackgroundColors.size() ?
-                position % mBackgroundColors.size() : position;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-        convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
+        if (inflater == null)
+            inflater = (LayoutInflater) activity
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (convertView == null)
+            convertView = inflater.inflate(R.layout.list_row, null);
 
-        Log.d(TAG, "getView position:" + position + " h:" + positionHeight);
+        ImageView thumbNail = (ImageView) convertView
+                .findViewById(R.id.thumbnail);
+        TextView title = (TextView) convertView.findViewById(R.id.title);
+        TextView rating = (TextView) convertView.findViewById(R.id.rating);
+        TextView genre = (TextView) convertView.findViewById(R.id.genre);
+        TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
 
-        vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setText(getItem(position));
+        // getting movie data for the row
+        FoodData f = foodItems.get(position);
 
-        vh.btnLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                //TODO : LIKE this food!
-                Toast.makeText(getContext(), "LIKE Button Clicked Position " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
+        // thumbnail image
+       // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
+
+        // title
+        title.setText(f.get_name());
+
+        // rating
+        //rating.setText("Rating: " + String.valueOf(m.getRating()));
+
+        // genre
+        String genreStr = "";
+//        for (String str : m.getGenre()) {
+//            genreStr += str + ", ";
+//        }
+        genreStr = genreStr.length() > 0 ? genreStr.substring(0,
+                genreStr.length() - 2) : genreStr;
+        genre.setText(genreStr);
+
+        // release year
+        //year.setText(String.valueOf(m.getYear()));
 
         return convertView;
     }
 
-    private double getPositionRatio(final int position) {
-        double ratio = sPositionHeightRatios.get(position, 0.0);
-        // if not yet done generate and stash the columns height
-        // in our real world scenario this will be determined by
-        // some match based on the known height and width of the image
-        // and maybe a helpful way to get the column height!
-        if (ratio == 0) {
-            ratio = getRandomHeightRatio();
-            sPositionHeightRatios.append(position, ratio);
-            Log.d(TAG, "getPositionRatio:" + position + " ratio:" + ratio);
-        }
-        return ratio;
-    }
-
-    private double getRandomHeightRatio() {
-        return (mRandom.nextDouble() / 2.0) + 1.0; // height will be 1.0 - 1.5 the width
-    }
 }

@@ -19,17 +19,16 @@ import com.etsy.android.grid.StaggeredGridView;
 public class HomeActivity extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final String TAG = "HomeActivity";
     public static HomeActivity instance;
-
     private StaggeredGridView mGridView;
     private boolean mHasRequestedMore;
     private HomePageDataAdapter mAdapter;
-
+    public static KioskCommunicator kCommunicator;
     private RestaurantData _currentData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
+        setContentView(R.layout.activity_home);
 
         setTitle("Browse Categories");
         mGridView = (StaggeredGridView) findViewById(R.id.grid_view);
@@ -39,7 +38,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         View header = layoutInflater.inflate(R.layout.list_item_header_footer, null);
         View footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
         TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
-        TextView txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
+        TextView txtFooterTitle = (TextView) footer.findViewById(R.id.txt_title);
         txtHeaderTitle.setText("HOME");
         txtFooterTitle.setText("THE FOOTER!");
 
@@ -49,7 +48,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
 
         instance = this;
 
-        KioskCommunicator kCommunicator = new KioskCommunicator();
+        kCommunicator = new KioskCommunicator();
         kCommunicator.fetchData();
 
         mGridView.setAdapter(mAdapter);
@@ -75,6 +74,11 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                 break;
             case R.id.col3:
                 mGridView.setColumnCount(3);
+                break;
+            case R.id.col4:
+                kCommunicator.forceUpdate = true;
+                kCommunicator.fetchData();
+                // TODO : Refresh the grid
                 break;
         }
         return true;
@@ -117,32 +121,28 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(this, "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
 
-        if(_currentData != null) {
+        if (_currentData != null) {
             if (position <= _currentData.get_categories().length) {
                 Intent catIntent = new Intent(this, CategoryActivity.class);
-                CategoryActivity.CurrentData = _currentData.get_categories()[position-1];
+                CategoryActivity.CurrentData = _currentData.get_categories()[position - 1];
                 this.startActivity(catIntent);
             }
         }
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-    {
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(this, "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
         return true;
     }
 
-    public void dataReceived(RestaurantData rData){
-        for(CategoryData cat : rData.get_categories()){
-            mAdapter.add(cat.get_name());
+    public void dataReceived(RestaurantData rData) {
+        kCommunicator.forceUpdate = false;
+        mAdapter.clear();
+
+        for (CategoryData cat : rData.get_categories()) {
+            mAdapter.add(cat);
         }
-
         _currentData = rData;
-
-        mAdapter.add("Gallery");
-        mAdapter.add("Contact");
-        mAdapter.add("About");
-        mAdapter.add("Other!");
     }
 }
