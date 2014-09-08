@@ -140,9 +140,13 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         kCommunicator.forceUpdate = false;
         mAdapter.clear();
 
-        for (CategoryData cat : rData.get_categories()) {
-            mAdapter.add(cat);
+        if(  rData.get_categories() != null) {
+            for (CategoryData cat : rData.get_categories()) {
+                mAdapter.add(cat);
+            }
+            _currentData = rData;
         }
-        _currentData = rData;
     }
+
+
 }
