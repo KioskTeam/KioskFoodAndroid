@@ -153,10 +153,11 @@ public class KioskCommunicator {
                     } catch (Exception e) {
 
                         e.printStackTrace();
+                        return null;
                     }
                 }
 
-                if(response != null) {
+                if(response != null && response != "") {
                     FileOutputStream fOut = null;
                     try {
                         fOut = new FileOutputStream(localJsonFile, false);
@@ -230,10 +231,11 @@ public class KioskCommunicator {
 
         @Override
         protected void onPostExecute(RestaurantData result) {
-            // TODO : Hide Progress Dialog
             restaurantData = result;
-            HomeActivity.instance.dataReceived(result);
             hidePDialog();
+            if (result != null) {
+                HomeActivity.instance.dataReceived(result);
+            }
         }
 
         private void hidePDialog() {
