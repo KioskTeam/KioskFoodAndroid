@@ -22,6 +22,14 @@
             android:name=".CategoryActivity"
             android:label="@string/title_activity_category" >
         </activity>
+        <activity
+            android:name=".FoodBrowser"
+            android:label="@string/title_activity_food_browser" >
+        </activity>
+        <activity
+            android:name=".FoodActivity"
+            android:label="@string/title_activity_food" >
+        </activity>
     </application>
 
 </manifest>

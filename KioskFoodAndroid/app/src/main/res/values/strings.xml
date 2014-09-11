@@ -9,5 +9,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_category">Category Activity</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_food_browser">Food</string>
+    <string name="title_activity_food">FoodActivity</string>
 
 </resources>

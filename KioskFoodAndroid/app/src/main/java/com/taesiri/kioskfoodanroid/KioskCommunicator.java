@@ -86,8 +86,6 @@ public class KioskCommunicator {
 
     public void getImage(String imageKey, Callable<Void> callBackFunction) throws Exception {
 
-        Log.i("MREZA", "GETTING the IMAGE!");
-
         if(ImagePool.get(imageKey)!= null)
         {
             callBackFunction.call();
@@ -131,7 +129,6 @@ public class KioskCommunicator {
                     }
                 }
                 catch (IOException e) {
-                    //You'll need to add proper error handling here
                 }
 
                 response = text.toString();
