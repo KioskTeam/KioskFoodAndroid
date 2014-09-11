@@ -2,6 +2,7 @@ package com.taesiri.kioskfoodanroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by MohammadReza on 9/2/2014.
@@ -47,17 +49,30 @@ public class CategoryDataAdapter extends BaseAdapter {
         if (convertView == null)
             convertView = inflater.inflate(R.layout.list_row, null);
 
-        ImageView thumbNail = (ImageView) convertView.findViewById(R.id.thumbnail);
+        final ImageView thumbNail = (ImageView) convertView.findViewById(R.id.thumbnail);
         TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView rating = (TextView) convertView.findViewById(R.id.rating);
+        //TextView rating = (TextView) convertView.findViewById(R.id.rating);
         TextView description = (TextView) convertView.findViewById(R.id.description);
 
-        FoodData f = foodItems.get(position);
-
-        // thumbnail image
-        // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
+        final FoodData f = foodItems.get(position);
 
         title.setText(f.get_name());
+
+        try {
+            int index = foodItems.get(position).get_thumbnailImageUrl().lastIndexOf("/");
+            final String imageKey = foodItems.get(position).get_thumbnailImageUrl().substring(index + 1);
+            HomeActivity.instance.kCommunicator.getImage(  imageKey , new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Bitmap foodThumbnail = HomeActivity.instance.kCommunicator.ImagePool.get(imageKey);
+                    thumbNail.setImageBitmap(foodThumbnail);
+                    return null;
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // rating
         //rating.setText("Rating: " + String.valueOf(m.getRating()));

@@ -12,7 +12,7 @@
         android:layout_height="80dp"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="8dp"
-        android:background="@color/blue"/>
+        android:scaleType="centerCrop"/>
 
     <!-- Food Title -->
     <TextView
