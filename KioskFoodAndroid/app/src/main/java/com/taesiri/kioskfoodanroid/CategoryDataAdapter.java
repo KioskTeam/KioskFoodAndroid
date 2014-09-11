@@ -43,41 +43,27 @@ public class CategoryDataAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (inflater == null)
-            inflater = (LayoutInflater) activity
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null)
             convertView = inflater.inflate(R.layout.list_row, null);
 
-        ImageView thumbNail = (ImageView) convertView
-                .findViewById(R.id.thumbnail);
+        ImageView thumbNail = (ImageView) convertView.findViewById(R.id.thumbnail);
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView rating = (TextView) convertView.findViewById(R.id.rating);
-        TextView genre = (TextView) convertView.findViewById(R.id.genre);
-        TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
+        TextView description = (TextView) convertView.findViewById(R.id.description);
 
-        // getting movie data for the row
         FoodData f = foodItems.get(position);
 
         // thumbnail image
-       // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
+        // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
 
-        // title
         title.setText(f.get_name());
 
         // rating
         //rating.setText("Rating: " + String.valueOf(m.getRating()));
 
-        // genre
-        String genreStr = "";
-//        for (String str : m.getGenre()) {
-//            genreStr += str + ", ";
-//        }
-        genreStr = genreStr.length() > 0 ? genreStr.substring(0,
-                genreStr.length() - 2) : genreStr;
-        genre.setText(genreStr);
-
-        // release year
-        //year.setText(String.valueOf(m.getYear()));
+        // description
+        description.setText("Description");
 
         return convertView;
     }
