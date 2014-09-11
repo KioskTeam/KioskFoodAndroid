@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.taesiri.kioskfoodanroid.FoodActivity">
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical" >
+
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/food_pager"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:drawable/alert_dark_frame"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/food_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="FOOD NAME"
+            android:layout_weight="1"
+
+            />
+    </LinearLayout>
+
+</RelativeLayout>

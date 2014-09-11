@@ -39,11 +39,9 @@ public class CategoryActivity extends Activity {
 
             foodList.add(foodData);
         }
-        // changing action bar color
-        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1b1b1b")));
+        setTitle(CurrentData.get_name());
 
         hidePDialog();
-
     }
 
     @Override
