@@ -42,8 +42,8 @@ public class KioskCommunicator {
     private static final String TAG_PRICE = "Price";
     private static final String TAG_THUMBNAIL = "Thumbnail";
     private static final String TAG_PICTURES = "Pictures";
-    private static final String REMOTE_ASSET_DIRECTORY = "http://secure-scrubland-8071.herokuapp.com/assets/";
-    private static final String REMOTE_API_URL = "http://secure-scrubland-8071.herokuapp.com/api/latest";
+    private static final String REMOTE_ASSET_DIRECTORY = "http://178.62.23.195/assets/";
+    private static final String REMOTE_API_URL = "http://178.62.23.195//api/restaurant/1";
     private static final String ASSETS_FOLDER_NAME = "assets";
     private static final String DATA_FOLDER_NAME = "data";
     private static final String LOCAL_JSON_FILE_NAME = "data.json";

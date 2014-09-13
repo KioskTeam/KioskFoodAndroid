@@ -13,8 +13,6 @@ public class CategoryActivity extends Activity {
     // Log tag
     private static final String TAG = CategoryActivity.class.getSimpleName();
 
-    // Movies json url
-    private static final String url = "http://api.androidhive.info/json/movies.json";
     public static CategoryData CurrentData;
     private ProgressDialog pDialog;
     private List<FoodData> foodList = new ArrayList<FoodData>();
@@ -31,7 +29,6 @@ public class CategoryActivity extends Activity {
         listView.setAdapter(adapter);
 
         pDialog = new ProgressDialog(this);
-        // Showing progress dialog before making http request
         pDialog.setMessage("Loading...");
         pDialog.show();
 
